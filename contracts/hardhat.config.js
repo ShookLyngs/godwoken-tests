@@ -32,7 +32,7 @@ module.exports = {
       chainId: 71401,
     },
     gw_alphanet_v1: { // for internal testing
-      url: `https://godwoken-alphanet-v1.ckbapp.dev`,
+      url: `http://godwoken-alphanet-v1.ckbapp.dev`,
       accounts: [`0x${PRIVATE_KEY}`, `0x${PRIVATE_KEY2}`],
       version: "1.2.0",
       chainId: 202206,
