@@ -1,5 +1,6 @@
 // We import Chai to use its asserting functions here.
 const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
 // `describe` is a Mocha function that allows you to organize your tests. It's
 // not actually needed, but having your tests organized makes debugging them
@@ -60,6 +61,10 @@ describe("Token contract", function () {
 
   describe("Transactions", function () {
     it("Should transfer tokens between accounts", async function () {
+      // TODO: this part has a gasLimit issue, so we added this to test it out, you should remove it after the issue is fixed
+      const estimation = await hardhatToken.estimateGas.transfer(addr1.address, 100);
+      console.log('estimateGas: ', estimation.toNumber());
+
       // Transfer 50 tokens from owner to addr1
       const tx = await hardhatToken.transfer(addr1.address, 50);
       await tx.wait();
