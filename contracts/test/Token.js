@@ -59,15 +59,32 @@ describe("Token contract", function () {
     });
   });
 
+  describe("Transactions loop", function () {
+    for (let i = 0; i < 10000; i++) {
+      it(`test round-${i}`, async function () {
+        // TODO: this part has a gasLimit issue, so we added this to test it out, you should remove it after the issue is fixed
+        const estimation = await hardhatToken.estimateGas.transfer(addr1.address, 100);
+        let tx;
+
+        try {
+          tx = await hardhatToken.transfer(addr1.address, 50);
+          await tx.wait();
+
+          const addr1Balance = await hardhatToken.balanceOf(addr1.address);
+          expect(addr1Balance).to.equal(50);
+        } finally {
+          const receipt = await ethers.provider.getTransactionReceipt(tx.hash);
+          console.log(`[test-round ${i}] estimateGas: ${estimation.toNumber()}, gasUsed: ${receipt.gasUsed.toNumber()}, gasLimit: ${tx.gasLimit.toNumber()}`);
+        }
+      });
+    }
+  });
+
   describe("Transactions", function () {
     it("Should transfer tokens between accounts", async function () {
-      // TODO: this part has a gasLimit issue, so we added this to test it out, you should remove it after the issue is fixed
-      const estimation = await hardhatToken.estimateGas.transfer(addr1.address, 100);
-      console.log('estimateGas: ', estimation.toNumber());
-
-      // Transfer 50 tokens from owner to addr1
       const tx = await hardhatToken.transfer(addr1.address, 50);
       await tx.wait();
+
       const addr1Balance = await hardhatToken.balanceOf(addr1.address);
       expect(addr1Balance).to.equal(50);
     });

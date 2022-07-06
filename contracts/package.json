@@ -6,7 +6,9 @@
     "compile": "hardhat compile",
     "test": "hardhat test --network gw_devnet_v1",
     "test:gw_testnet_v1": "hardhat test --bail --network gw_testnet_v1",
-    "test:gw_alphanet_v1": "hardhat test --bail --network gw_alphanet_v1"
+    "test:gw_alphanet_v1": "hardhat test test/Token --bail --network gw_alphanet_v1",
+    "test:testnet_token": "hardhat test test/Token --bail --network gw_testnet_v1 --grep \"Transactions loop\"",
+    "test:devnet_token": "hardhat test test/Token --bail --network gw_devnet_v1 --grep \"Transactions loop\""
   },
   "keywords": [
     "Solidity",
