@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import { Command, Option } from 'commander';
-import { HexString } from '@ckb-lumos/base';
+import { utils as lumosUtils, HexString } from '@ckb-lumos/base';
 import { Network } from '../config';
 import { createSudtTypeScript } from '../utils/sudt';
 import { createLightGodwoken } from '../utils/client';
@@ -27,8 +27,8 @@ export default function setupDeposit(program: Command) {
 
 export async function deposit(params: {
   privateKey: HexString;
-  capacity: string;
   network: Network;
+  capacity: string;
   sudtLockArgs?: string;
   sudtAmount?: string;
   sudtDecimals?: string;
@@ -38,7 +38,7 @@ export async function deposit(params: {
   }
 
   const network = getConfig(params.network);
-  const lightGodwokenV1 = await createLightGodwoken({
+  const client = await createLightGodwoken({
     privateKey: params.privateKey,
     rpc: network.rpc,
     network: network.network,
@@ -46,7 +46,8 @@ export async function deposit(params: {
     config: network.lightGodwokenConfig,
   });
 
-  const lightGodwokenConfig = lightGodwokenV1.provider.getConfig();
+  const lightGodwokenConfig = client.provider.getConfig();
+  const capacity = utils.parseUnits(params.capacity, 8);
   const sudtType = params.sudtLockArgs
     ? createSudtTypeScript(params.sudtLockArgs, lightGodwokenConfig)
     : void 0;
@@ -54,8 +55,17 @@ export async function deposit(params: {
     ? utils.parseUnits(params.sudtAmount, params.sudtDecimals).toHexString()
     : '0x0';
 
-  const capacity = utils.parseUnits(params.capacity, 8);
-  const result = await lightGodwokenV1.deposit({
+  console.debug(`from: ${client.provider.getL1Address()}`);
+  console.debug(`to: ${client.provider.getL2Address()}`);
+  console.debug(`capacity: ${params.capacity} CKB`);
+
+  if (sudtType) {
+    const typeHash = lumosUtils.computeScriptHash(sudtType);
+    console.debug(`sudt-type-hash: ${typeHash}`);
+    console.debug(`sudt-amount: ${client.provider.getL1Address()}`);
+  }
+
+  const result = await client.deposit({
     capacity: capacity.toHexString(),
     sudtType: sudtType,
     amount: sudtAmount,

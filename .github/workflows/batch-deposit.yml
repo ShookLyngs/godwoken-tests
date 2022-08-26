@@ -1,0 +1,61 @@
+name: Batch Deposit
+
+on:
+  workflow_dispatch:
+    inputs:
+      rounds:
+        type: string
+        default: '1'
+        required: true
+        description: 'for-loop rounds, default is 1'
+      network:
+        type: choice
+        required: true
+        default: 'alphanet_v1'
+        description: 'godwoken network to use'
+        options:
+          - testnet_v1
+          - alphanet_v1
+      accounts:
+        type: string
+        default: '10'
+        required: true
+        description: 'derived account count'
+      capacity:
+        type: string
+        default: '400'
+        required: true
+        description: 'deposit capacity, default is 400'
+
+jobs:
+  batch-deposit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Account-Faucet
+        working-directory: scripts/account-faucet
+        run: npm install && npm run build
+      - name: Setup Light-Godwoken-CLI
+        working-directory: scripts/light-godwoken-cli
+        run: ./init.sh
+
+      - name: Claim faucet for derived accounts
+        working-directory: scripts/account-faucet
+        run: |
+          account-faucet batch-claim-l1 \
+            --private-key ${{ secrets.GODWOKEN_TESTNET_PK1 }} \
+            --count ${{ inputs.accounts }}
+            --network ${{ inputs.network }}
+
+      - name: Create batch deposits
+        working-directory: scripts/light-godwoken-cli
+        run: |
+          rounds=${{ inputs.rounds }}
+          echo "rounds = $rounds"
+          for _ in $(seq 1 $rounds); do
+            lgc batch-deposit \
+              --private-key ${{ secrets.GODWOKEN_TESTNET_PK1 }} \
+              --capacity ${{ inputs.capacity }} \
+              --network ${{ inputs.network }};
+          done

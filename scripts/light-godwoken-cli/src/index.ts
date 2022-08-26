@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { Command } from 'commander';
 import deposit from './commands/deposit';
 import withdraw from './commands/withdraw';
+import batchDeposit from './commands/batch-deposit';
 import transfer from './commands/transfer';
 import getBalance from './commands/get-balance';
 import findTypeScript from './commands/find-script-tx';
@@ -9,6 +10,7 @@ import findTypeScript from './commands/find-script-tx';
 const commands = [
   deposit,
   withdraw,
+  batchDeposit,
   transfer,
   getBalance,
   findTypeScript,

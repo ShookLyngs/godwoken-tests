@@ -43,9 +43,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node_modules-
 
-      - name: Install dependencies
+      - name: Setup environment
         working-directory: scripts/account-faucet
-        run: npm install
+        run: npm install && npm run build
 
       - name: Claim faucet for open accounts
         working-directory: scripts/account-faucet
@@ -54,23 +54,23 @@ jobs:
           KEY2: 2dc6374a2238e414e51874f514b0fa871f8ce0eb1e7ecaa0aed229312ffc91b0
           KEY3: dd50cac37ec6dd12539a968c1a2cbedda75bd8724f7bcad486548eaabb87fc8b
         run: |
-          npm run faucet -- claim -p $KEY1
-          npm run faucet -- claim -p $KEY2
-          npm run faucet -- claim -p $KEY3
-          npm run faucet -- claim -p $KEY1 -n alphanet_v1
-          npm run faucet -- claim -p $KEY2 -n alphanet_v1
-          npm run faucet -- claim -p $KEY3 -n alphanet_v1
+          account-faucet claim-l2 -p $KEY1
+          account-faucet claim-l2 -p $KEY2
+          account-faucet claim-l2 -p $KEY3
+          account-faucet claim-l2 -p $KEY1 -n alphanet_v1
+          account-faucet claim-l2 -p $KEY2 -n alphanet_v1
+          account-faucet claim-l2 -p $KEY3 -n alphanet_v1
 
-      - name: Claim faucet for testnet/alphanet accounts
+      - name: Claim faucet for private accounts
         working-directory: scripts/account-faucet
         env:
           KEY1: ${{ secrets.GODWOKEN_TEST_PRIVATE_KEY }}
           KEY2: ${{ secrets.GODWOKEN_TEST_PRIVATE_KEY2 }}
           KEY3: ${{ secrets.GW_TESTNET_V1_TEST_PK }}
         run: |
-          npm run faucet -- claim -p $KEY1
-          npm run faucet -- claim -p $KEY2
-          npm run faucet -- claim -p $KEY3
-          npm run faucet -- claim -p $KEY1 -n alphanet_v1
-          npm run faucet -- claim -p $KEY2 -n alphanet_v1
-          npm run faucet -- claim -p $KEY3 -n alphanet_v1
+          account-faucet claim-l2 -p $KEY1
+          account-faucet claim-l2 -p $KEY2
+          account-faucet claim-l2 -p $KEY3
+          account-faucet claim-l2 -p $KEY1 -n alphanet_v1
+          account-faucet claim-l2 -p $KEY2 -n alphanet_v1
+          account-faucet claim-l2 -p $KEY3 -n alphanet_v1
